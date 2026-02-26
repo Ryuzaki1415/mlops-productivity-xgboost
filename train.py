@@ -32,11 +32,18 @@ def train():
         print("Loading data...")
 
         df = pd.read_csv(DATA_PATH)
+        
+        
 
         df = create_features(df)
+    
 
         X = df.drop(columns=[TARGET_COLUMN])
         y = df[TARGET_COLUMN]
+
+        print("dataframe after feature engineering : ")
+        
+        print(df.head(10))
 
         X_train, X_test, y_train, y_test = train_test_split(
             X, y,
@@ -77,7 +84,6 @@ def train():
         mlflow.log_metric("mae", mae)
         mlflow.log_metric("r2", r2)
 
-        print("Running SHAP analysis...")
         run_shap_analysis(best_model, X_train)
 
         os.makedirs(MODEL_DIR, exist_ok=True)

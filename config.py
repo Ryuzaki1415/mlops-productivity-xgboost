@@ -1,13 +1,12 @@
 import os
 
-DATA_PATH = r"C:\Users\dheer\Downloads\Kaggle_dataset\Smartphone_Usage_Productivity_Dataset_50000.csv"
+DATA_PATH = r"D:\ML_project\dataset\screen_sleep_stress_highsignal.csv"
 
 TARGET_COLUMN = "Work_Productivity_Score"
 
-DROP_COLUMNS = ["User_ID"]
+DROP_COLUMNS = ["User_ID"," Age",]
 
 NUMERICAL_COLUMNS = [
-    "Age",
     "Daily_Phone_Hours",
     "Social_Media_Hours",
     "Sleep_Hours",
@@ -24,21 +23,18 @@ CATEGORICAL_COLUMNS = [
 ]
 
 DERIVED_COLUMNS = [
-    "phone_usage_intensity",
-    "social_media_ratio",
-    "weekend_usage_ratio",
+    # "social_media_ratio",
+    # "weekend_usage_ratio",
     "sleep_deficit",
-    "caffeine_per_hour",
     "stress_sleep_ratio",
     "screen_stress_interaction",
-    "apps_per_hour"
 ]
 
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
 
 MODEL_DIR = "models"
-MODEL_NAME = "xgboost_pipeline.pkl"
+MODEL_NAME = "xgboost_pipeline_v3.pkl"
 MODEL_PATH = os.path.join(MODEL_DIR, MODEL_NAME)
 
 MLFLOW_EXPERIMENT_NAME = "screen_productivity_xgboost"
