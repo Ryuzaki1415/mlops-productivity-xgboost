@@ -50,3 +50,6 @@ PARAM_GRID = {
     "model__subsample": [0.8, 1.0],
     "model__colsample_bytree": [0.8, 1.0],
 }
+
+
+print("Loaded Configs!")

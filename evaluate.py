@@ -3,6 +3,8 @@ import numpy as np
 
 
 def evaluate_model(model, X_test, y_test):
+    
+    print("Conducting Evals")
 
     predictions = model.predict(X_test)
 

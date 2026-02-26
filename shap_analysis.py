@@ -5,6 +5,8 @@ import os
 
 
 def run_shap_analysis(pipeline, X_train):
+    
+    print("Running SHAP Analysis")
 
     model = pipeline.named_steps["model"]
 

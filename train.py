@@ -24,7 +24,7 @@ from shap_analysis import run_shap_analysis
 
 
 def train():
-
+    print("Commencing Training.....")
     mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)
 
     with mlflow.start_run():

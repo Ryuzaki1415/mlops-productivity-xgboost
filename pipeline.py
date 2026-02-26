@@ -7,6 +7,8 @@ from config import NUMERICAL_COLUMNS, CATEGORICAL_COLUMNS, DERIVED_COLUMNS, RAND
 
 
 def build_pipeline():
+    
+    print("Building Pipeline!")
 
     numeric_features = NUMERICAL_COLUMNS + DERIVED_COLUMNS
 
