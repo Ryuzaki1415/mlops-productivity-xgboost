@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+mlruns/
+artifacts/
+models/
+*.pkl
+uv.lock
