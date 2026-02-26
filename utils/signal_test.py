@@ -1,5 +1,5 @@
 import pandas as pd
-from config import DATA_PATH, TARGET_COLUMN
+from utils.config import DATA_PATH, TARGET_COLUMN
 from feature_engineering import create_features
 
 df = pd.read_csv(DATA_PATH)

@@ -3,24 +3,18 @@ import os
 import joblib
 import mlflow
 import mlflow.sklearn
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 
-from config import (
-    DATA_PATH,
-    TARGET_COLUMN,
-    TEST_SIZE,
-    RANDOM_STATE,
-    MODEL_PATH,
-    MODEL_DIR,
-    PARAM_GRID,
-    MLFLOW_EXPERIMENT_NAME,
-)
+from utils.config import DATA_PATH,TARGET_COLUMN,TEST_SIZE,RANDOM_STATE,MODEL_PATH,MODEL_DIR,PARAM_GRID,MLFLOW_EXPERIMENT_NAME
 
 from feature_engineering import create_features
 from pipeline import build_pipeline
 from evaluate import evaluate_model
-from shap_analysis import run_shap_analysis
+from utils.shap_analysis import run_shap_analysis
 
 
 def train():

@@ -1,6 +1,8 @@
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import numpy as np
-
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def evaluate_model(model, X_test, y_test):
     

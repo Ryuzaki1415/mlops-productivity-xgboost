@@ -3,8 +3,11 @@ import joblib
 
 from sklearn.model_selection import train_test_split
 
-from config import DATA_PATH, TARGET_COLUMN, TEST_SIZE, RANDOM_STATE, MODEL_PATH
+from utils.config import DATA_PATH, TARGET_COLUMN, TEST_SIZE, RANDOM_STATE, MODEL_PATH
 from feature_engineering import create_features
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def main():

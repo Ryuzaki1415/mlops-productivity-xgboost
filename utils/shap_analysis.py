@@ -2,7 +2,7 @@ import shap
 import matplotlib.pyplot as plt
 import mlflow
 import os
-from config import NUMERICAL_COLUMNS,DERIVED_COLUMNS,CATEGORICAL_COLUMNS
+from utils.config import NUMERICAL_COLUMNS,DERIVED_COLUMNS,CATEGORICAL_COLUMNS
 
 # def run_shap_analysis(pipeline, X_train):
     

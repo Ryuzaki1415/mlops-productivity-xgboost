@@ -2,7 +2,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OrdinalEncoder, FunctionTransformer
 from xgboost import XGBRegressor
-from config import NUMERICAL_COLUMNS, CATEGORICAL_COLUMNS, DERIVED_COLUMNS, RANDOM_STATE
+from utils.config import NUMERICAL_COLUMNS, CATEGORICAL_COLUMNS, DERIVED_COLUMNS, RANDOM_STATE
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def build_pipeline():
     numeric_features = NUMERICAL_COLUMNS + DERIVED_COLUMNS
