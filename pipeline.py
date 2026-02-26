@@ -22,8 +22,6 @@ def build_pipeline():
         random_state=RANDOM_STATE,
         seed=RANDOM_STATE,
         n_estimators=1000,           # early stopping will cut this
-        early_stopping_rounds=50,
-        eval_metric="rmse",
         max_depth=4,                 # shallower = less overfit on 3k rows
         learning_rate=0.05,
         subsample=0.8,

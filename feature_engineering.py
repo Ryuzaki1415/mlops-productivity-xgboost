@@ -13,8 +13,8 @@ def create_features(df: pd.DataFrame) -> pd.DataFrame:
 
     # Avoid division by zero
     
-    # df["social_media_ratio"] = df["Social_Media_Hours"] / (df["Daily_Phone_Hours"] + 0.1)
-    # df["weekend_usage_ratio"] = df["Weekend_Screen_Time_Hours"] / (df["Daily_Phone_Hours"] + 0.1)
+    df["social_media_ratio"] = df["Social_Media_Hours"] / (df["Daily_Phone_Hours"] + 0.1)
+    df["weekend_usage_ratio"] = df["Weekend_Screen_Time_Hours"] / (df["Daily_Phone_Hours"] + 0.1)
 
     df["sleep_deficit"] = 8 - df["Sleep_Hours"]
 

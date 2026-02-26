@@ -23,8 +23,8 @@ CATEGORICAL_COLUMNS = [
 ]
 
 DERIVED_COLUMNS = [
-    # "social_media_ratio",
-    # "weekend_usage_ratio",
+    "social_media_ratio",
+    "weekend_usage_ratio",
     "sleep_deficit",
     "stress_sleep_ratio",
     "screen_stress_interaction",
@@ -34,7 +34,7 @@ TEST_SIZE = 0.2
 RANDOM_STATE = 42
 
 MODEL_DIR = "models"
-MODEL_NAME = "xgboost_pipeline_v3.pkl"
+MODEL_NAME = "xgboost_pipeline_v4.pkl"
 MODEL_PATH = os.path.join(MODEL_DIR, MODEL_NAME)
 
 MLFLOW_EXPERIMENT_NAME = "screen_productivity_xgboost"
