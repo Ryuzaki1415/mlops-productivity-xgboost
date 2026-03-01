@@ -27,17 +27,17 @@ DERIVED_COLUMNS = [
     "weekend_usage_ratio",
     "sleep_deficit",
     "stress_sleep_ratio",
-    "screen_stress_interaction",
 ]
 
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
 
 MODEL_DIR = "models"
-MODEL_NAME = "xgboost_pipeline_v5.pkl"
+MODEL_NAME = "xgboost_pipeline_v6.pkl"
 MODEL_PATH = os.path.join(MODEL_DIR, MODEL_NAME)
 
 MLFLOW_EXPERIMENT_NAME = "screen_productivity_xgboost"
+MLFLOW_TRACKING_URI="sqlite:///D:/ML_project/ML/mlflow.db"
 
 PARAM_GRID = {
     "model__n_estimators": [100, 300],

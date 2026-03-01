@@ -15,10 +15,13 @@ from feature_engineering import create_features
 from pipeline import build_pipeline
 from evaluate import evaluate_model
 from utils.shap_analysis import run_shap_analysis
+from utils.config import MLFLOW_TRACKING_URI
+
 
 
 def train():
     print("Commencing Training.....")
+    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
     mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)
 
     with mlflow.start_run():
@@ -84,8 +87,10 @@ def train():
 
         joblib.dump(best_model, MODEL_PATH)
 
-        mlflow.sklearn.log_model(best_model, "model")
-
-        print("Model saved to:", MODEL_PATH)
-
+        mlflow.sklearn.log_model(
+        sk_model=best_model,
+        artifact_path="model",
+        registered_model_name="productivity_model"
+)
+        print("Model registered to MLflow as 'productivity_model'")
         return best_model

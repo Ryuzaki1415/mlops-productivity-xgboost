@@ -42,7 +42,7 @@ def get_explainer():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Loading model...")
-    load_model(MODEL_PATH)
+    load_model()
     logger.info("Model ready. Building SHAP explainer...")
     get_explainer()   # warm up explainer at startup
     logger.info("Startup complete.")
@@ -110,6 +110,14 @@ def compute_shap_top5(
 
 
 # ── Routes ─────────────────────────────────────────────────────────────────────
+
+
+
+@app.get("/")
+async def greet():
+    return {"message": "Please Navigate to the Streamlit Frontend!"}
+
+
 @app.get("/health", response_model=HealthResponse, tags=["Meta"])
 async def health_check():
     try:
