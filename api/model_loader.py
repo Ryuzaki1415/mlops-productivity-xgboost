@@ -1,4 +1,3 @@
-import joblib
 import logging
 from pathlib import Path
 import mlflow.pyfunc
@@ -12,20 +11,6 @@ _pipeline = None
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
 
-# def load_model(model_path: str):
-#     global _pipeline
-#     path = Path(model_path)
-
-#     if not path.exists():
-#         raise FileNotFoundError(
-#             f"Model file not found at: {model_path}\n"
-#             f"Make sure your .pkl file is at artifacts/model.pkl"
-#         )
-
-#     _pipeline = joblib.load(path)
-
-#     logger.info(f"Model loaded successfully from {model_path}")
-#     return _pipeline
 MODEL_NAME = "productivity_model"
 MODEL_VERSION = "1"  # replace MODEL_STAGE with this
 

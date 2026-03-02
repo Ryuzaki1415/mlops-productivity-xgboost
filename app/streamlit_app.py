@@ -146,17 +146,42 @@ def make_shap_bar(contributors: list[dict]) -> go.Figure:
 def call_predict(payload: dict) -> dict | None:
     try:
         with httpx.Client(timeout=120.0) as client:
+
+            # 1️⃣ Submit task
             r = client.post(f"{FASTAPI_BASE_URL}/predict", json=payload)
             r.raise_for_status()
-            return r.json()
+            response = r.json()
+
+            # If cached result returned immediately
+            if "score" in response:
+                return response
+
+            task_id = response.get("task_id")
+
+            if not task_id:
+                st.error("No task_id returned from API.")
+                return None
+
+            # 2️⃣ Poll result endpoint
+            while True:
+                r = client.get(f"{FASTAPI_BASE_URL}/result/{task_id}")
+
+                if r.status_code == 202:
+                    time.sleep(2)
+                    continue
+
+                r.raise_for_status()
+
+                return r.json()
+
     except httpx.ConnectError:
-        st.error("❌ Cannot connect to the API. Is FastAPI running? `uvicorn api.main:app --reload`")
+        st.error("❌ Cannot connect to the API.")
     except httpx.HTTPStatusError as e:
         st.error(f"❌ API error {e.response.status_code}: {e.response.text}")
     except Exception as e:
         st.error(f"❌ Unexpected error: {e}")
-    return None
 
+    return None
 
 # ── Progress stepper ───────────────────────────────────────────────────────────
 STEPS = [
