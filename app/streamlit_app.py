@@ -210,7 +210,7 @@ with st.sidebar:
 # ── Main Panel ─────────────────────────────────────────────────────────────────
 st.markdown('<div class="main-title">📊 Work Productivity Predictor</div>', unsafe_allow_html=True)
 st.markdown(
-    '<div class="sub-title">Powered by XGBoost + LLaMA 3.2 · Insight generated locally via Ollama</div>',
+    '<div class="sub-title">Powered by XGBoost + ministral · Insight generated locally via Ollama</div>',
     unsafe_allow_html=True,
 )
 
@@ -288,7 +288,7 @@ st.markdown("---")
 
 # ── LLM Insight ────────────────────────────────────────────────────────────────
 # ── LLM Insight ────────────────────────────────────────────────────────────────
-st.markdown("### 🤖 AI Insight (LLaMA 3.2)")
+st.markdown("### 🤖 AI Insight (ministral 3b)")
 
 if insight.startswith("⚠️"):
     st.warning(insight)

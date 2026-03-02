@@ -11,6 +11,7 @@ import shap
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+
 from utils.config import (
    NUMERICAL_COLUMNS, CATEGORICAL_COLUMNS, DERIVED_COLUMNS,
 )
@@ -21,6 +22,8 @@ from feature_engineering import create_features
 from model_loader import load_model, get_pipeline
 from schemas import PredictionRequest, PredictionResponse, SHAPContributor, HealthResponse
 from llm_client import get_llm_insight, check_ollama_health
+from cache import make_cache_key, cache_get, cache_set
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -137,6 +140,18 @@ async def health_check():
 
 @app.post("/predict", response_model=PredictionResponse, tags=["Prediction"])
 async def predict(request: PredictionRequest):
+    
+    
+    # Caching
+    raw_dict = request.model_dump()
+    cache_key = make_cache_key(raw_dict)
+    cached_response = await cache_get(cache_key)
+    if cached_response:
+        print("CACHE HIT")
+        return PredictionResponse(**cached_response)  
+    print("CACHE MISS")
+    
+    
     pipeline = get_pipeline()
 
     # 1. Raw input → DataFrame
@@ -178,9 +193,13 @@ async def predict(request: PredictionRequest):
         model=OLLAMA_MODEL,
     )
 
-    return PredictionResponse(
+    response = PredictionResponse(
         score=round(score, 2),
         score_category=category,
         top_contributors=[SHAPContributor(**c) for c in top_contributors],
         insight=insight,
     )
+    
+    await cache_set(cache_key, response.model_dump())
+    return response
+    
