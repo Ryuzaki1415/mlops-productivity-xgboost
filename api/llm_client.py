@@ -137,7 +137,7 @@ def get_llm_insight_sync(
         "options": {
             "temperature": 0.3,
             "top_p": 0.9,
-            "num_predict": 350,
+            "num_predict": 300,
         }
     }
 

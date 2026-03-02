@@ -11,4 +11,5 @@ celery_app.conf.task_routes = {
     "tasks.run_prediction": {"queue": "predictions"}
 }
 
+# to register the task
 celery_app.autodiscover_tasks(["api"])
