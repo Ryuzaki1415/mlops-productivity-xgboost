@@ -4,8 +4,7 @@ from celery.signals import worker_process_init
 
 from api.model_loader import load_model
 
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-
+REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
 celery_app = Celery(
     "worker",
     broker=REDIS_URL,

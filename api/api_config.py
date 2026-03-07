@@ -45,7 +45,6 @@ API_HOST       = "0.0.0.0"
 API_PORT       = 8000
 OLLAMA_BASE_URL = "http://host.docker.internal:11434"
 OLLAMA_MODEL    = "ministral-3:3b"
-FASTAPI_BASE_URL = "http://localhost:8000"
-
-REDIS_HOST="localhost"
-REDIS_PORT=6379
+FASTAPI_BASE_URL = os.getenv("FASTAPI_BASE_URL", "http://api:8000")
+REDIS_HOST = os.getenv("REDIS_HOST", "redis")
+REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))

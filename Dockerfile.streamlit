@@ -1,0 +1,13 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# no build-essential needed — all streamlit deps are pure Python or have wheels
+COPY requirements-streamlit.txt .
+RUN pip install --no-cache-dir -r requirements-streamlit.txt
+
+COPY . .
+
+ENV PYTHONPATH=/app
+
+EXPOSE 8501

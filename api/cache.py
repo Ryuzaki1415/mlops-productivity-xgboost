@@ -8,7 +8,7 @@ from api.api_config import REDIS_HOST,REDIS_PORT
 import os
 import redis
 
-REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 
 redis_client_sync = redis.Redis(
