@@ -10,40 +10,31 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-
-from utils.config import (
-   NUMERICAL_COLUMNS, CATEGORICAL_COLUMNS, DERIVED_COLUMNS,
-)
-
-
-from api.api_config import  OLLAMA_BASE_URL, OLLAMA_MODEL,MODEL_PATH
+from api.api_config import  OLLAMA_BASE_URL, OLLAMA_MODEL
 from api.feature_engineering import create_features
 from api.model_loader import load_model, get_pipeline
-from api.schemas import PredictionRequest, PredictionResponse, SHAPContributor, HealthResponse
+from api.schemas import PredictionRequest, PredictionResponse,HealthResponse
 from api.llm_client import  check_ollama_health
-from api.cache import make_cache_key, cache_get_sync, cache_set_sync
-
-
+from api.cache import make_cache_key, cache_get_sync
 from api.tasks import run_prediction,get_explainer
-
-
 from celery.result import AsyncResult
 from api.celery_app import celery_app
+
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # ── Lifespan: load model once at startup ──────────────────────────────────────
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    logger.info("Loading model...")
-    load_model()
-    logger.info("Model ready. Building SHAP explainer...")
-    get_explainer()   # warm up explainer at startup
-    logger.info("Startup complete.")
-    yield
-    logger.info("Shutting down.")
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     logger.info("Loading model...")
+#     load_model()
+#     logger.info("Model ready. Building SHAP explainer...")
+#     get_explainer()   # warm up explainer at startup
+#     logger.info("Startup complete.")
+#     yield
+#     logger.info("Shutting down.")
 
 
 # ── App ────────────────────────────────────────────────────────────────────────
@@ -51,7 +42,6 @@ app = FastAPI(
     title="Productivity Predictor API",
     description="Predicts Work Productivity Score from lifestyle and screen-time features.",
     version="1.0.0",
-    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -98,15 +88,15 @@ async def predict(request: PredictionRequest):
     cached =  cache_get_sync(cache_key)
 
     if cached:
-        print("CACHE HIT !!")
+        logger.info("CACHE HIT !!")
         return PredictionResponse(**cached)
     
-    print("CACHE MISS !!")
+    logger.info("CACHE MISS !!")
 
 
     task = run_prediction.delay(raw_dict)
     
-    print("TASK SENT:", task.id)
+    logger.info("TASK SENT:", task.id)
 
     return {"task_id": task.id}
     

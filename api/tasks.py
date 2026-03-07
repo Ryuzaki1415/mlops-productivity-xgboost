@@ -1,26 +1,24 @@
 import numpy as np
 import pandas as pd
-
 from api.celery_app import celery_app
 import shap
-
 from api.model_loader import get_pipeline
 from api.feature_engineering import create_features
 from api.schemas import SHAPContributor
 from api.api_config import OLLAMA_BASE_URL, OLLAMA_MODEL
-
 from utils.config import (
    NUMERICAL_COLUMNS, CATEGORICAL_COLUMNS, DERIVED_COLUMNS,
 )
 from api.llm_client import get_llm_insight_sync
 from api.cache import cache_set_sync,make_cache_key
-
 from api.schemas import PredictionResponse
-
-
 from api.model_loader import load_model
+import logging
+
 
 _shap_explainer = None
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
@@ -78,20 +76,20 @@ def compute_shap_top5(
 
 @celery_app.task(name="api.tasks.run_prediction")
 def run_prediction(raw_dict: dict):
-    print("Task Received")
+    logger.info("Task Received")
     
     
     try:
         pipeline = get_pipeline()
     except RuntimeError:
-        print("loaded Model")
+        logger.info("loaded Model")
         load_model()
         pipeline = get_pipeline()
-    print("making cache")
+    logger.info("making cache")
     cache_key = make_cache_key(raw_dict)
     pipeline = get_pipeline()
 
-    print("Initiated Feature engineering")
+    logger.info("Initiated Feature engineering")
     df_input = pd.DataFrame([raw_dict])
     df_engineered = create_features(df_input)
 
@@ -109,14 +107,14 @@ def run_prediction(raw_dict: dict):
     feature_names = get_feature_names(pipeline)
     X_processed_df = pd.DataFrame(X_processed_array, columns=feature_names)
 
-    print("predicting score")
+    logger.info("predicting score")
     model = pipeline.named_steps["model"]
     score = float(np.clip(model.predict(X_processed_df)[0], 0, 100))
     category = classify_score(score)
-    print("evaluating SHAP")
+    logger.info("evaluating SHAP")
     top_contributors = compute_shap_top5(pipeline, X_processed_df)
 
-    print("Getting LLM insight")
+    logger.info("Getting LLM insight")
     # LLM call (now safe — runs in worker)
     insight = get_llm_insight_sync(
         score,

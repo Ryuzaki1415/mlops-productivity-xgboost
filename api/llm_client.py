@@ -41,62 +41,10 @@ Top 5 model features driving this prediction (SHAP values — positive means boo
 In 4–5 sentences:
 1. Explain what is primarily driving this {"low" if score < 50 else "high"} productivity score, referencing the specific numbers above.
 2. Identify the single biggest factor the user should address.
-3. Give 2 concrete, actionable recommendations tailored to their profile.
-
+3. Give 2 concrete, actionable recommendations tailored to their profile.If they have good numbers,then dont nitpick and praise them for their lifestyle.
 Be direct and specific. Do not give generic wellness advice. Reference the actual numbers."""
 
     return prompt
-
-
-# async def get_llm_insight(
-#     score: float,
-#     category: str,
-#     raw_features: dict,
-#     top_contributors: list[dict],
-#     ollama_base_url: str,
-#     model: str = "llama3.2",
-#     timeout: float = 60.0,
-# ) -> str:
-#     """
-#     Sends a prompt to Ollama and returns the LLM response as a string.
-#     Uses async httpx for non-blocking I/O.
-#     """
-#     prompt = build_prompt(score, category, raw_features, top_contributors)
-
-#     payload = {
-#         "model": model,
-#         "prompt": prompt,
-#         "stream": False,
-#         "options": {
-#             "temperature": 0.3,      # low temp = consistent, factual tone
-#             "top_p": 0.9,
-#             "num_predict": 350,      # ~4–5 sentences worth of tokens
-#         }
-#     }
-
-#     try:
-#         async with httpx.AsyncClient(timeout=timeout) as client:
-#             response = await client.post(
-#                 f"{ollama_base_url}/api/generate",
-#                 json=payload
-#             )
-#             response.raise_for_status()
-#             data = response.json()
-#             return data.get("response", "").strip()
-
-#     except httpx.ConnectError:
-#         logger.error("Cannot connect to Ollama. Is it running? Run: ollama serve")
-#         return (
-#             "⚠️ Could not connect to the local LLM. "
-#             "Please ensure Ollama is running (`ollama serve`) "
-#             "and the llama3.2 model is pulled (`ollama pull llama3.2`)."
-#         )
-#     except httpx.TimeoutException:
-#         logger.error("Ollama request timed out.")
-#         return "⚠️ LLM response timed out. The model may still be loading — try again in a moment."
-#     except Exception as e:
-#         logger.error(f"LLM error: {e}")
-#         return f"⚠️ LLM error: {str(e)}"
 
 
 async def check_ollama_health(ollama_base_url: str, model: str = None) -> bool:
@@ -122,7 +70,7 @@ def get_llm_insight_sync(
     raw_features: dict,
     top_contributors: list[dict],
     ollama_base_url: str,
-    model: str = "llama3.2",
+    model: str = "ministral-3:3b",
     timeout: float = 60.0,
 ) -> str:
     """
@@ -135,8 +83,8 @@ def get_llm_insight_sync(
         "prompt": prompt,
         "stream": False,
         "options": {
-            "temperature": 0.3,
-            "top_p": 0.9,
+            "temperature": 0.5,
+            "top_p": 0.8,
             "num_predict": 300,
         }
     }

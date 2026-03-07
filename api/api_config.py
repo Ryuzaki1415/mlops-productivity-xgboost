@@ -43,6 +43,9 @@ RANDOM_STATE = 42
 # ── Services ───────────────────────────────────────────────────────────────────
 API_HOST       = "0.0.0.0"
 API_PORT       = 8000
-OLLAMA_BASE_URL = "http://localhost:11434"
+OLLAMA_BASE_URL = "http://host.docker.internal:11434"
 OLLAMA_MODEL    = "ministral-3:3b"
 FASTAPI_BASE_URL = "http://localhost:8000"
+
+REDIS_HOST="localhost"
+REDIS_PORT=6379

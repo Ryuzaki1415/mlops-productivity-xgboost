@@ -27,6 +27,7 @@ DERIVED_COLUMNS = [
     "weekend_usage_ratio",
     "sleep_deficit",
     "stress_sleep_ratio",
+    "screen_stress_interaction"
 ]
 
 TEST_SIZE = 0.2
