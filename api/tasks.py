@@ -5,7 +5,6 @@ import shap
 from api.model_loader import get_pipeline
 from api.feature_engineering import create_features
 from api.schemas import SHAPContributor
-from api.api_config import OLLAMA_BASE_URL, OLLAMA_MODEL
 from utils.config import (
    NUMERICAL_COLUMNS, CATEGORICAL_COLUMNS, DERIVED_COLUMNS,
 )
@@ -121,8 +120,6 @@ def run_prediction(raw_dict: dict):
         category,
         raw_dict,
         top_contributors,
-        OLLAMA_BASE_URL,
-        OLLAMA_MODEL
     )
     
     

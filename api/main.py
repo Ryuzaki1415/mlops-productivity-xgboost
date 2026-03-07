@@ -1,23 +1,17 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import logging
-from contextlib import asynccontextmanager
-
-import numpy as np
-import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-
-from api.api_config import  OLLAMA_BASE_URL, OLLAMA_MODEL
-from api.feature_engineering import create_features
-from api.model_loader import load_model, get_pipeline
+from api.model_loader import  get_pipeline
 from api.schemas import PredictionRequest, PredictionResponse,HealthResponse
-from api.llm_client import  check_ollama_health
 from api.cache import make_cache_key, cache_get_sync
 from celery.result import AsyncResult
 from api.celery_app import celery_app
+from api.cache import redis_client_sync
+from api.llm_client import check_groq_health
+from api.model_loader import MODEL_PATH
 
 
 
@@ -44,16 +38,32 @@ async def greet():
 
 @app.get("/health", response_model=HealthResponse, tags=["Meta"])
 async def health_check():
+    # 1. model check
+    model_loaded = MODEL_PATH.exists()
+
+    # 2. redis check — reuse existing client, don't create a new one
     try:
-        get_pipeline()
-        model_loaded = True
-    except RuntimeError:
-        model_loaded = False
-    ollama_ready = await check_ollama_health(OLLAMA_BASE_URL, OLLAMA_MODEL)
+        redis_client_sync.ping()
+        redis_ready = True
+    except Exception as e:
+        logger.error(f"Redis health check failed: {e}")
+        redis_ready = False
+
+    # 3. groq check
+    groq_ready = await check_groq_health()
+
+    if model_loaded and redis_ready and groq_ready:
+        status = "ok"
+    elif model_loaded and redis_ready:
+        status = "degraded"
+    else:
+        status = "unhealthy"
+
     return HealthResponse(
-        status="ok" if model_loaded else "degraded",
+        status=status,
         model_loaded=model_loaded,
-        ollama_ready=ollama_ready,
+        groq_ready=groq_ready,
+        redis_ready=redis_ready,
     )
 
 @app.post("/predict")

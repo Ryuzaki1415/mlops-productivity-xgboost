@@ -26,10 +26,7 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-    environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_URL: redis://redis:6379/0
+    env_file: .env
     volumes:
       - .:/app
     restart: unless-stopped
@@ -44,17 +41,13 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-    environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_URL: redis://redis:6379/0
+    env_file: .env
     volumes:
       - .:/app
     restart: unless-stopped
 
   flower:
-    # flower only needs celery + redis — reuse the api image (lighter than celery)
-    image: myapp-celery:latest 
+    image: myapp-celery:latest
     container_name: flower
     command: celery -A api.celery_app.celery_app flower --port=5555
     ports:
@@ -62,8 +55,7 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-    environment:
-      REDIS_URL: redis://redis:6379/0
+    env_file: .env
     volumes:
       - .:/app
     restart: unless-stopped
@@ -79,8 +71,7 @@ services:
       - "8501:8501"
     depends_on:
       - api
-    environment:
-      FASTAPI_BASE_URL: http://api:8000
+    env_file: .env
     volumes:
       - .:/app
     restart: unless-stopped

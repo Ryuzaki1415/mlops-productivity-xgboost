@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from typing import Literal
-from typing import Optional
+
 
 
 # ── Input schema ───────────────────────────────────────────────────────────────
@@ -59,8 +59,8 @@ class PredictionResponse(BaseModel):
     insight:          str  # LLM-generated explanation
 
 
-# ── Health check ──────────────────────────────────────────────────────────────
 class HealthResponse(BaseModel):
-    status:      str
+    status: str                # "ok" | "degraded" | "unhealthy"
     model_loaded: bool
-    ollama_ready: bool
+    groq_ready: bool
+    redis_ready: bool
