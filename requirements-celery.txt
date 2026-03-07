@@ -43,3 +43,4 @@ flower==2.0.1
 humanize==4.15.0
 prometheus-client==0.24.1
 groq==1.0.0
+prometheus-client

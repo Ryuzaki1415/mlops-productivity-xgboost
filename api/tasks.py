@@ -87,55 +87,62 @@ def run_prediction(raw_dict: dict):
         logger.info("loaded Model")
         load_model()
         pipeline = get_pipeline()
-    logger.info("making cache")
-    cache_key = make_cache_key(raw_dict)
-    pipeline = get_pipeline()
+        
+    try:
+        logger.info("making cache")
+        cache_key = make_cache_key(raw_dict)
+        pipeline = get_pipeline()
 
-    logger.info("Initiated Feature engineering")
-    df_input = pd.DataFrame([raw_dict])
-    df_engineered = create_features(df_input)
+        logger.info("Initiated Feature engineering")
+        df_input = pd.DataFrame([raw_dict])
+        df_engineered = create_features(df_input)
 
-    feature_cols = (
-        NUMERICAL_COLUMNS +
-        DERIVED_COLUMNS +
-        CATEGORICAL_COLUMNS
-    )
+        feature_cols = (
+            NUMERICAL_COLUMNS +
+            DERIVED_COLUMNS +
+            CATEGORICAL_COLUMNS
+        )
 
-    df_features = df_engineered[feature_cols]
+        df_features = df_engineered[feature_cols]
 
-    preprocessor = pipeline.named_steps["preprocessor"]
-    X_processed_array = preprocessor.transform(df_features)
+        preprocessor = pipeline.named_steps["preprocessor"]
+        X_processed_array = preprocessor.transform(df_features)
 
-    feature_names = get_feature_names(pipeline)
-    X_processed_df = pd.DataFrame(X_processed_array, columns=feature_names)
+        feature_names = get_feature_names(pipeline)
+        X_processed_df = pd.DataFrame(X_processed_array, columns=feature_names)
 
-    logger.info("predicting score")
-    model = pipeline.named_steps["model"]
-    score = float(np.clip(model.predict(X_processed_df)[0], 0, 100))
-    category = classify_score(score)
-    logger.info("evaluating SHAP")
-    top_contributors = compute_shap_top5(pipeline, X_processed_df)
+        logger.info("predicting score")
+        model = pipeline.named_steps["model"]
+        score = float(np.clip(model.predict(X_processed_df)[0], 0, 100))
+        category = classify_score(score)
+        logger.info("evaluating SHAP")
+        top_contributors = compute_shap_top5(pipeline, X_processed_df)
 
-    logger.info("Getting LLM insight")
-    # LLM call (now safe — runs in worker)
-    insight = get_llm_insight_sync(
-        score,
-        category,
-        raw_dict,
-        top_contributors,
-    )
-    
-    
-    response = PredictionResponse(
-        score=round(score, 2),
-        score_category=category,
-        top_contributors=[SHAPContributor(**c) for c in top_contributors],
-        insight=insight
-    )
+        logger.info("Getting LLM insight")
+        # LLM call (now safe — runs in worker)
+        insight = get_llm_insight_sync(
+            score,
+            category,
+            raw_dict,
+            top_contributors,
+        )
+        
+        
+        response = PredictionResponse(
+            score=round(score, 2),
+            score_category=category,
+            top_contributors=[SHAPContributor(**c) for c in top_contributors],
+            insight=insight
+        )
 
-    # cache serialized version
-    
-    print("setting cache")
-    cache_set_sync(cache_key, response.model_dump())
+        # cache serialized version
+        PREDICTION_LATENCY.observe(time.time() - start)
+        
+        print("setting cache")
+        cache_set_sync(cache_key, response.model_dump())
 
-    return response.model_dump()
+        return response.model_dump()
+    except Exception:
+        PREDICTION_FAILURES.inc()
+        raise
+        
