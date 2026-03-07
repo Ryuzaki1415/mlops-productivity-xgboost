@@ -120,12 +120,15 @@ def run_prediction(raw_dict: dict):
 
         logger.info("Getting LLM insight")
         # LLM call (now safe — runs in worker)
-        insight = get_llm_insight_sync(
-            score,
-            category,
-            raw_dict,
-            top_contributors,
-        )
+        try:
+            insight = get_llm_insight_sync(
+                score,
+                category,
+                raw_dict,
+                top_contributors,
+            )
+        except Exception:
+            insight = f"Score: {score:.1f}/100 ({category}). Top factor: {top_contributors[0]['feature']}."  
         
         
         response = PredictionResponse(
@@ -136,11 +139,10 @@ def run_prediction(raw_dict: dict):
         )
 
         # cache serialized version
-        PREDICTION_LATENCY.observe(time.time() - start)
         
         print("setting cache")
         cache_set_sync(cache_key, response.model_dump())
-
+        PREDICTION_LATENCY.observe(time.time() - start)
         return response.model_dump()
     except Exception:
         PREDICTION_FAILURES.inc()

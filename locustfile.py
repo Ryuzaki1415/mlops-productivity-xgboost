@@ -5,17 +5,18 @@ import time
 import random
 
 def generate_payload():
+    phone_hours = random.uniform(4, 10)
     return {
-        "Daily_Phone_Hours": random.uniform(4, 10),
-        "Social_Media_Hours": random.uniform(1, 5),
+        "Daily_Phone_Hours": phone_hours,
+        "Social_Media_Hours": random.uniform(1, min(3, phone_hours)),  # never exceeds phone
         "Sleep_Hours": random.uniform(5, 8),
         "Stress_Level": random.uniform(3, 9),
         "App_Usage_Count": random.randint(5, 30),
         "Caffeine_Intake_Cups": random.uniform(0, 4),
         "Weekend_Screen_Time_Hours": random.uniform(4, 12),
-        "Gender": random.choice(["Male", "Female"]),
-        "Occupation": random.choice(["Engineer", "Doctor", "Student"]),
-        "Device_Type": random.choice(["Android", "iOS"])
+        "Gender": random.choice(["Male", "Female", "Non-binary"]),
+        "Occupation": random.choice(["Engineer", "Student", "Manager", "Healthcare", "Creative", "Sales"]),
+        "Device_Type": random.choice(["Android", "iOS", "Both"])
     }
 
 class PredictionUser(HttpUser):
@@ -42,10 +43,8 @@ class PredictionUser(HttpUser):
 
         # 2️⃣ Poll until complete
         while True:
-            result = self.client.get(f"/result/{task_id}")
-
+            result = self.client.get(f"/result/{task_id}", name="/result/[task_id]")
             if result.status_code == 202:
                 time.sleep(1)
                 continue
-
             break
