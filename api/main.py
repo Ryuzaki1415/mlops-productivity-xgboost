@@ -12,8 +12,7 @@ from api.celery_app import celery_app
 from api.cache import redis_client_sync
 from api.llm_client import check_groq_health
 from api.model_loader import MODEL_PATH
-
-
+from prometheus_fastapi_instrumentator import Instrumentator
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -23,6 +22,8 @@ app = FastAPI(
     description="Predicts Work Productivity Score from lifestyle and screen-time features.",
     version="1.0.0",
 )
+
+Instrumentator().instrument(app).expose(app)
 
 app.add_middleware(
     CORSMiddleware,

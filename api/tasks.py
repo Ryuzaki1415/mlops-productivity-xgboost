@@ -1,4 +1,5 @@
 import numpy as np
+import time
 import pandas as pd
 from api.celery_app import celery_app
 import shap
@@ -13,6 +14,7 @@ from api.cache import cache_set_sync,make_cache_key
 from api.schemas import PredictionResponse
 from api.model_loader import load_model
 import logging
+from api.metrics import PREDICTION_REQUESTS, PREDICTION_LATENCY, PREDICTION_FAILURES
 
 
 _shap_explainer = None
@@ -76,7 +78,8 @@ def compute_shap_top5(
 @celery_app.task(name="api.tasks.run_prediction")
 def run_prediction(raw_dict: dict):
     logger.info("Task Received")
-    
+    PREDICTION_REQUESTS.inc()
+    start = time.time()
     
     try:
         pipeline = get_pipeline()
