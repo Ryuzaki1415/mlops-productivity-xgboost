@@ -21,7 +21,10 @@ from utils.config import MLFLOW_TRACKING_URI
 
 def train():
     print("Commencing Training.....")
+    os.environ["MLFLOW_TRACKING_URI"] = MLFLOW_TRACKING_URI
+    os.environ["MLFLOW_ARTIFACT_URI"] = MLFLOW_TRACKING_URI
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+    mlflow.set_registry_uri(MLFLOW_TRACKING_URI)
     mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)
 
     with mlflow.start_run():
@@ -92,5 +95,10 @@ def train():
         artifact_path="model",
         registered_model_name="productivity_model"
 )
+
+        # Force verify artifact was logged
+        active_run = mlflow.active_run()
+        print(f"Run ID: {active_run.info.run_id}")
+        print(f"Artifact URI: {active_run.info.artifact_uri}")
         print("Model registered to MLflow as 'productivity_model'")
         return best_model
