@@ -11,7 +11,6 @@ from celery.result import AsyncResult
 from api.celery_app import celery_app
 from api.cache import redis_client_sync
 from api.llm_client import check_groq_health
-from api.model_loader import MODEL_PATH
 from prometheus_fastapi_instrumentator import Instrumentator
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address

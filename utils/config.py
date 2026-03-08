@@ -34,12 +34,12 @@ TEST_SIZE = 0.2
 RANDOM_STATE = 42
 
 MODEL_DIR = "models"
-MODEL_NAME = "xgboost_pipeline_v6.pkl"
+MODEL_NAME = "xgboost_pipeline_v7.pkl"
 MODEL_PATH = os.path.join(MODEL_DIR, MODEL_NAME)
 
-MLFLOW_EXPERIMENT_NAME = "screen_productivity_xgboost"
-MLFLOW_TRACKING_URI="sqlite:///D:/ML_project/ML/mlflow.db"
-
+MLFLOW_EXPERIMENT_NAME = "screen_productivity_xgboost_v2"
+MLFLOW_TRACKING_URI = "http://localhost:5000"
+MLFLOW_ARTIFACT_URI = "mlflow-artifacts:/"
 PARAM_GRID = {
     "model__n_estimators": [100, 300],
     "model__max_depth": [3, 5, 7],

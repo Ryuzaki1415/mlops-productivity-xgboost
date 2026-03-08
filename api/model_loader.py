@@ -1,23 +1,24 @@
 import logging
-from pathlib import Path
-import joblib
+import os
+import mlflow
+import mlflow.sklearn
 
 logger = logging.getLogger(__name__)
 
 _pipeline = None
 
-MODEL_PATH = Path("api/artifacts/xgboost_pipeline_v5.pkl")  # adjust if filename differs
+MLFLOW_TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI", "http://mlflow:5000")
+MODEL_NAME = "productivity_model"
+MODEL_ALIAS = "production"
 
 def load_model():
     global _pipeline
-
-    if not MODEL_PATH.exists():
-        raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
-
-    _pipeline = joblib.load(MODEL_PATH)
-    logger.info(f"Loaded model from {MODEL_PATH}")
+    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+    model_uri = f"models:/{MODEL_NAME}@{MODEL_ALIAS}"
+    logger.info(f"Loading model from MLflow registry: {model_uri}")
+    _pipeline = mlflow.sklearn.load_model(model_uri)
+    logger.info("Model loaded successfully from MLflow registry")
     return _pipeline
-
 
 def get_pipeline():
     if _pipeline is None:

@@ -1,4 +1,7 @@
 services:
+
+  # ── Infrastructure ────────────────────────────────────────────────────────
+
   redis:
     image: redis:7
     container_name: redis
@@ -14,6 +17,46 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── MLflow ────────────────────────────────────────────────────────────────
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: mlflow
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - MLFLOW_BACKEND_STORE_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    volumes:
+      - mlflow_artifacts:/mlflow/artifacts
+    command: sh -c "mlflow server --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB} --artifacts-destination /mlflow/artifacts --serve-artifacts --host 0.0.0.0 --port 5000 --allowed-hosts 'mlflow,mlflow:*,localhost,localhost:*,127.0.0.1,127.0.0.1:*'"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── Application ───────────────────────────────────────────────────────────
+
   api:
     build:
       context: .
@@ -25,6 +68,8 @@ services:
       - "8000"
     depends_on:
       redis:
+        condition: service_healthy
+      mlflow:
         condition: service_healthy
     env_file: .env
     volumes:
@@ -44,6 +89,8 @@ services:
       - "8001"
     depends_on:
       redis:
+        condition: service_healthy
+      mlflow:
         condition: service_healthy
     env_file: .env
     volumes:
@@ -80,6 +127,8 @@ services:
       - .:/app
     restart: unless-stopped
 
+  # ── Observability ─────────────────────────────────────────────────────────
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -115,6 +164,8 @@ services:
       - prometheus
     restart: unless-stopped
 
+  # ── Nginx ─────────────────────────────────────────────────────────────────
+
   nginx:
     image: nginx:alpine
     container_name: nginx
@@ -127,7 +178,6 @@ services:
       - streamlit
       - flower
       - celery
-    # Generates .htpasswd from env var at container startup
     command: >
       sh -c "apk add --no-cache apache2-utils &&
       htpasswd -cb /etc/nginx/.htpasswd admin $${NGINX_AUTH_PASSWORD} &&
@@ -137,5 +187,7 @@ services:
 
 volumes:
   redis_data:
+  postgres_data:
   prometheus_data:
   grafana_data:
+  mlflow_artifacts:

@@ -68,3 +68,4 @@ prometheus-client==0.24.1
 groq==1.0.0
 prometheus-fastapi-instrumentator==7.1.0
 slowapi==0.1.9
+mlflow-skinny

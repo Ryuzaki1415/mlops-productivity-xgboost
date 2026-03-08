@@ -38,7 +38,7 @@ DERIVED_COLUMNS = [
 RAW_INPUT_COLUMNS = NUMERICAL_COLUMNS + ["Sleep_Hours"] + CATEGORICAL_COLUMNS
 
 # ── Reproducibility ────────────────────────────────────────────────────────────
-RANDOM_STATE = 42
+RANDOM_STATE = 42 # Hitchhker's blessing
 
 # ── Services ───────────────────────────────────────────────────────────────────
 API_HOST       = "0.0.0.0"
