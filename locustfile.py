@@ -27,7 +27,7 @@ class PredictionUser(HttpUser):
     def predict_flow(self):
 
         # 1️⃣ Submit task
-        response = self.client.post("/predict", json=generate_payload())
+        response = self.client.post("/api//predict", json=generate_payload())
         if response.status_code != 200:
             return
 
@@ -43,7 +43,7 @@ class PredictionUser(HttpUser):
 
         # 2️⃣ Poll until complete
         while True:
-            result = self.client.get(f"/result/{task_id}", name="/result/[task_id]")
+            result = self.client.get(f"/api//result/{task_id}", name="/result/[task_id]")
             if result.status_code == 202:
                 time.sleep(1)
                 continue
