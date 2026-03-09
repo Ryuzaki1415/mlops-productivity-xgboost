@@ -60,7 +60,7 @@ async def health_check(request: Request):
         redis_client_sync.ping()
         redis_ready = True
     except Exception as e:
-        logger.error(f"Redis health check failed: {e}")
+        logger.error(f"Redis health check has failed: {e}")
         redis_ready = False
 
     groq_ready = await check_groq_health()
