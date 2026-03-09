@@ -31,6 +31,9 @@ jobs:
             echo "Restarting stack..."
             docker compose up -d
 
+            echo "Restarting nginx to reconnect to updated containers..."
+            docker compose restart nginx
+
             echo "Cleaning up old images..."
             docker image prune -f
 

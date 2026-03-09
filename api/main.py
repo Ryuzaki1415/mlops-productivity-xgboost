@@ -48,7 +48,13 @@ async def greet():
 @app.get("/health", response_model=HealthResponse, tags=["Meta"])
 @limiter.limit("60/minute")
 async def health_check(request: Request):
-    model_loaded = MODEL_PATH.exists()
+    # Check model loaded from MLflow registry
+    try:
+        get_pipeline()  
+        model_loaded = True
+    except Exception as e:
+        logger.error(f"Model health check failed: {e}")
+        model_loaded = False
 
     try:
         redis_client_sync.ping()
