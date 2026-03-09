@@ -1,5 +1,6 @@
 import sys
 import os
+import mlflow
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import logging
 from fastapi import FastAPI, HTTPException, Request
@@ -44,13 +45,14 @@ app.add_middleware(
 async def greet():
     return {"message": "Please Navigate to the Streamlit Frontend!"}
 
-
 @app.get("/health", response_model=HealthResponse, tags=["Meta"])
 @limiter.limit("60/minute")
 async def health_check(request: Request):
-    # Check model loaded from MLflow registry
+    # Check model exists in MLflow registry
     try:
-        get_pipeline()  
+        mlflow.set_tracking_uri(os.environ.get("MLFLOW_TRACKING_URI", "http://mlflow:5000"))
+        client = mlflow.tracking.MlflowClient()
+        client.get_model_version_by_alias("productivity_model", "production")
         model_loaded = True
     except Exception as e:
         logger.error(f"Model health check failed: {e}")
@@ -60,7 +62,7 @@ async def health_check(request: Request):
         redis_client_sync.ping()
         redis_ready = True
     except Exception as e:
-        logger.error(f"Redis health check has failed: {e}")
+        logger.error(f"Redis health check failed: {e}")
         redis_ready = False
 
     groq_ready = await check_groq_health()
@@ -78,7 +80,6 @@ async def health_check(request: Request):
         groq_ready=groq_ready,
         redis_ready=redis_ready,
     )
-
 
 @app.post("/predict")
 @limiter.limit("10/minute")
