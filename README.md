@@ -40,6 +40,27 @@ The prediction is categorized as **Low / Moderate / High / Peak** and the SHAP w
 
 ---
 
+
+## Screenshots
+ 
+**Streamlit Frontend**
+![Streamlit UI](screenshots/streamlit.png)
+ 
+**User Feedback**
+![Load Test Results](screenshots/feedback.png)
+
+**Grafana Dashboard**
+![Grafana Dashboard](screenshots/grafana.png)
+ 
+**Locust Load Testing**
+![Locust Load Test](screenshots/locust.png)
+ 
+
+ 
+---
+
+
+
 ## System Architecture
 
 ```
@@ -235,7 +256,7 @@ docker compose up -d
 
 # 4. Train the model and register it in MLflow
 # Wait ~30s for MLflow to be healthy, then:
-docker exec -it celery_worker python ML/train.py
+docker exec -it celery_worker python ML/main.py
 
 # 5. Set the production alias in MLflow UI
 # Open http://localhost:5000 → find your run → set alias "production"
