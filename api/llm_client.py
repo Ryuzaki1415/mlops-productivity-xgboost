@@ -54,7 +54,7 @@ def get_llm_insight_sync(
             model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.5,
-            max_tokens=120,
+            max_tokens=300,
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
