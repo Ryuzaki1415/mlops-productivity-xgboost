@@ -50,7 +50,7 @@ The prediction is categorized as **Low / Moderate / High / Peak** and the SHAP w
 ![Load Test Results](screenshots/feedback.png)
 
 **Grafana Dashboard**
-![Grafana Dashboard](screenshots/grafana.png)
+![Grafana Dashboard](screenshots/Grafana.png)
  
 **Locust Load Testing**
 ![Locust Load Test](screenshots/locust.png)
